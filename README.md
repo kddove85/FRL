@@ -13,6 +13,7 @@ Once these are downloaded and installed, you will have to update your Path Envir
 these two items. For instance:
 
 C:\Program Files\VideoLAN\VLC
+
 C:\Program Files\ffmpeg\bin
 
 Once all of this has been complete, you should be able to run the application.
