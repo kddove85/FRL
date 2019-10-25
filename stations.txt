@@ -1,0 +1,3 @@
+Please Select a Station,
+WUOM,http://playerservices.streamtheworld.com/api/livestream-redirect/WUOMFM.mp3
+WJR,http://16843.live.streamtheworld.com:3690/WJRAM_SC

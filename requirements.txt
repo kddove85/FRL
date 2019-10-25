@@ -1,0 +1,5 @@
+python-vlc
+easygui
+pydub
+pyaudio
+wave
