@@ -1,6 +1,6 @@
+import os
 import vlc
 import time
-# from pydub import AudioSegment
 import pydub
 import pyaudio
 import wave
@@ -11,17 +11,7 @@ from datetime import datetime
 class RecordingLogic:
     # TODO: Below is what the signature needs to become
     def __init__(self, station, start_time, end_time):
-        # self.wuom = 'http://playerservices.streamtheworld.com/api/livestream-redirect/WUOMFM.mp3'
-        # self.wjr = 'http://16843.live.streamtheworld.com:3690/WJRAM_SC'
-
         self.file_name = 'output.wav'
-
-        # year = 1970
-        # month = 1
-        # day = 1
-
-        # start_time = datetime(year, month, day, 20, 35)
-        # end_time = datetime(year, month, day, 20, 36)
 
         length_of_recording = self._get_length(start_time, end_time)
 
@@ -33,9 +23,6 @@ class RecordingLogic:
 
         t1 = threading.Thread(target=self._play, args=(station, end_time), name='t1')
         t2 = threading.Thread(target=self._record_audio, args=(length_of_recording, self.file_name), name='t2')
-
-        # t1 = threading.Thread(target=self._print_a, args=(30,), name='t1')
-        # t2 = threading.Thread(target=self._print_b, args=(30,), name='t2')
 
         t1.start()
         t2.start()
@@ -112,6 +99,7 @@ class RecordingLogic:
     def _convert_to_mp3(self, wave_file):
         sound = pydub.AudioSegment.from_wav(wave_file)  # 'myfile.wav'
         sound.export('myfile.mp3', format='mp3')
+        os.remove(wave_file)
 
     def _get_length(self, start_time, end_time):
         diff = end_time - start_time
