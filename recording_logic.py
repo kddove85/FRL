@@ -34,9 +34,6 @@ class RecordingLogic:
         t1 = threading.Thread(target=self._play, args=(station, end_time), name='t1')
         t2 = threading.Thread(target=self._record_audio, args=(length_of_recording, self.file_name), name='t2')
 
-        # t1 = threading.Thread(target=self._print_a, args=(30,), name='t1')
-        # t2 = threading.Thread(target=self._print_b, args=(30,), name='t2')
-
         t1.start()
         t2.start()
 
@@ -44,7 +41,6 @@ class RecordingLogic:
         t2.join()
 
         print('Both things are done')
-
         self._convert_to_mp3(self.file_name)
 
     def _print_a(self, num):
@@ -78,11 +74,21 @@ class RecordingLogic:
 
         print('Recording')
 
+        info = p.get_host_api_info_by_index(0)
+        device_count = info.get('deviceCount')
+        for i in range(0, device_count):
+            if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+                print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+            else:
+                print("Output Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+
         stream = p.open(format=sample_format,
                         channels=channels,
                         rate=fs,
                         frames_per_buffer=chunk,
-                        input=True)
+                        input=True,
+                        input_device_index=3
+                        )
 
         frames = []  # Initialize array to store frames
 
@@ -112,6 +118,7 @@ class RecordingLogic:
     def _convert_to_mp3(self, wave_file):
         sound = pydub.AudioSegment.from_wav(wave_file)  # 'myfile.wav'
         sound.export('myfile.mp3', format='mp3')
+        print('Finished converting to MP3')
 
     def _get_length(self, start_time, end_time):
         diff = end_time - start_time
