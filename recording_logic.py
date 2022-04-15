@@ -18,7 +18,7 @@ class RecordingLogic:
         now = datetime.now().strftime("%H:%M")
         while now != start_time.strftime("%H:%M"):
             now = datetime.now().strftime("%H:%M")
-            print("Current Time =", now)
+            # print("Current Time =", now)
             time.sleep(1)
 
         t1 = threading.Thread(target=self._play, args=(station, end_time), name='t1')
@@ -30,7 +30,7 @@ class RecordingLogic:
         t1.join()
         t2.join()
 
-        print('Both things are done')
+        print('Playback & Recording - Complete')
         self._convert_to_mp3(self.file_name)
 
     def _print_a(self, num):
@@ -42,6 +42,8 @@ class RecordingLogic:
             print('b')
 
     def _play(self, url, end_time):
+        print("Audio Playback - Initiated")
+
         player = vlc.MediaPlayer(url)
         player.play()
 
@@ -51,6 +53,8 @@ class RecordingLogic:
             print("Current Time =", now)
             time.sleep(1)
         player.stop()
+
+        print("Audio Playback - complete")
 
     def _record_audio(self, seconds, file_name):
         chunk = 1024  # Record in chunks of 1024 samples
@@ -62,7 +66,7 @@ class RecordingLogic:
 
         p = pyaudio.PyAudio()  # Create an interface to PortAudio
 
-        print('Recording')
+        print('Audio Recording - Initiated')
 
         info = p.get_host_api_info_by_index(0)
         device_count = info.get('deviceCount')
@@ -93,8 +97,6 @@ class RecordingLogic:
         # Terminate the PortAudio interface
         p.terminate()
 
-        print('Finished recording')
-
         # Save the recorded data as a WAV file
         wf = wave.open(filename, 'wb')
         wf.setnchannels(channels)
@@ -105,12 +107,16 @@ class RecordingLogic:
 
         time.sleep(5)
 
+        print('Audio Recording - Initiated')
+
     def _convert_to_mp3(self, wave_file):
-        sound = pydub.AudioSegment.from_wav(wave_file)  # 'myfile.wav'
+        print("MP3 Conversion - Initiated")
+        sound = pydub.AudioSegment.from_wav(wave_file)
         sound.export('myfile.mp3', format='mp3')
-        print('Finished converting to MP3')
-        print('Removing Wave File')
+        print('MP3 Conversion - Complete')
+        print('Removing Wave File - Initiated')
         os.remove(wave_file)
+        print('Removing Wave File - Complete')
 
     def _get_length(self, start_time, end_time):
         diff = end_time - start_time
