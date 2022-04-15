@@ -54,7 +54,7 @@ class RecordingLogic:
             time.sleep(1)
         player.stop()
 
-        print("Audio Playback - complete")
+        print("Audio Playback - Complete")
 
     def _record_audio(self, seconds, file_name):
         chunk = 1024  # Record in chunks of 1024 samples
@@ -107,7 +107,7 @@ class RecordingLogic:
 
         time.sleep(5)
 
-        print('Audio Recording - Initiated')
+        print('Audio Recording - Complete')
 
     def _convert_to_mp3(self, wave_file):
         print("MP3 Conversion - Initiated")
