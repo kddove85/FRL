@@ -33,6 +33,8 @@ class RecordingLogic:
         print('Playback & Recording - Complete')
         self._convert_to_mp3(self.file_name)
 
+        print("Process Complete. Have a nice day!")
+
     def _print_a(self, num):
         for x in range(0, num):
             print('a')
