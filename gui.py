@@ -3,18 +3,32 @@ from tkinter.ttk import Combobox, Radiobutton
 from tkinter.font import Font
 from datetime import datetime
 from recording_logic import RecordingLogic as RL
+import threading
+import queue
+
+
+class ThreadedTask(threading.Thread):
+    def __init__(self, app_queue, station, start_time, end_time):
+        threading.Thread.__init__(self)
+        self.app_queue = app_queue
+        self.station = station
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def run(self):
+        RL(self.station, self.start_time, self.end_time)
+        self.app_queue.put("Task finished")
 
 
 class Gui:
     def __init__(self, master):
         self.master = master
 
+        self.gui_queue = queue.Queue()
+
         my_font = Font(family="Times New Roman", size=14)
         option_style = ttk.Style()
         option_style.configure('FRL.TCombobox', font=my_font)
-
-        # button_style = ttk.Style()
-        # button_style.configure('FRL.TButton', font=my_font)
 
         self.master.option_add('*TCombobox*Listbox.font', my_font)
         self.master.option_add('*TCombobox*Arrow', 100)
@@ -77,6 +91,11 @@ class Gui:
         self.end_time_pm = Radiobutton(self.master, text='PM', value='PM', variable=self.end_time_am_or_pm)
         self.end_time_pm.grid(row=2, column=4, padx=(20, 20), pady=(20, 20))
 
+        self.status = StringVar()
+        self.status.set('Status: Okay')
+        self.status_label = Label(self.master, textvariable=self.status, font=my_font)
+        self.status_label.grid(row=10, column=0, columnspan=10, padx=(20, 20), pady=(20, 20))
+
         self.record_button = Button(self.master, text="Record", command=self._record_button_clicked, font=my_font)
         self.record_button.grid(row=10, column=10, padx=(20, 20), pady=(20, 20))
 
@@ -96,14 +115,22 @@ class Gui:
         print(end_time.strftime("%H:%M"))
 
         if start_time >= end_time:
-            exit()
+            self.status.set('Error: Start Time greater than or equal to End Time')
+            return
 
         if station.strip() == '':
-            exit()
+            self.status.set('Error: Please Select a Station')
+            return
 
-        print('Button Pressed')
+        ThreadedTask(self.gui_queue, station, start_time, end_time).start()
+        self.master.after(100, self.process_queue)
 
-        RL(station, start_time, end_time)
+    def process_queue(self):
+        try:
+            msg = self.gui_queue.get(0)
+            # Show result of the task if needed
+        except queue.Empty:
+            self.master.after(100, self.process_queue)
 
     def _derive_time(self, hour, minute, am_pm):
         if am_pm == 'PM' and hour != 12:
@@ -121,8 +148,8 @@ class Gui:
 
     def _initiate_minutes(self):
         minutes_list = []
-        for x in range(0, 61):
-            minutes_list.append(x)
+        for x in range(0, 60):
+            minutes_list.append(str(x).zfill(2))
         return minutes_list
 
     def _initiate_stations(self):
