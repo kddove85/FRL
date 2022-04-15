@@ -117,16 +117,13 @@ class Gui:
         if start_time >= end_time:
             self.status.set('Error: Start Time greater than or equal to End Time')
             return
-            # exit()
 
         if station.strip() == '':
             self.status.set('Error: Please Select a Station')
             return
-            # exit()
 
         ThreadedTask(self.gui_queue, station, start_time, end_time).start()
         self.master.after(100, self.process_queue)
-        # RL(station, start_time, end_time)
 
     def process_queue(self):
         try:
