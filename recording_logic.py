@@ -118,6 +118,7 @@ class RecordingLogic:
         os.remove(wave_file)
         print('Removing Wave File - Complete')
 
+
     def _get_length(self, start_time, end_time):
         diff = end_time - start_time
         return diff.seconds
